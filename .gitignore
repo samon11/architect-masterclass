@@ -1,0 +1,14 @@
+# Obsidian-specific config
+.obsidian/**
+!obsidian/**
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Pi/agent config (personal preferences, not content)
+.agents/skills-lock.json
+.pi/**
+
+# not sure if I'm allowed to publish these!
+Transcripts/
