@@ -32,6 +32,8 @@ tags:
 - [x] Progress Reporting on Integration Points
 - [x] Service Lifecycle — Testing, Construction & the Waterfall Truth
 - [x] Project Tracking — Earned Value, Shallow S, and Living Plans
+- [x] Project Design — Critical Path, Float, and Dynamic Staffing
+- [x] Composable Design — Core Use Cases, Components & Agility
 - [ ] Project Design — Critical Path, Float, and Dynamic Staffing
 
 ## Transcript Sources
@@ -43,6 +45,7 @@ tags:
 - [Raw transcript — Project Design](../99-resources/Transcripts/Project%20Design.md)
 - [Raw transcript — Documentation](../99-resources/Transcripts/Documentation.md)
 - [Raw transcript — Process Flow](../99-resources/Transcripts/Process%20Flow.md)
+- [Raw transcript — Composable Design](../99-resources/Transcripts/Composable%20Design.md)
 
 ## Notes
 
@@ -832,6 +835,245 @@ Developers want to code. Methodologies like agile let them pretend they're doing
 
 ---
 
+### Composable Design — The Architecture of Permanence
+
+> [!abstract]
+> Composable design is a design methodology where you identify a small set of core components (typically ~10) that you can combine in various ways to satisfy **all** use cases — present, future, known, and unknown. The key insight: never design against requirements. Design against a small set of building blocks that can be recomposed when requirements change.
+
+---
+
+#### Core Use Cases vs. Fluff
+
+Requirements are almost always **fluff**: variations of things, happy/sad/incomplete cases, one-off customer requests. Separate requirements into:
+
+| Type | Characteristics | Example |
+|------|----------------|---------|
+| **Core use cases** | Essence of the system, essence of the business, what brings customers to the door | Federal Express shipping packages |
+| **Fluff** | All variations, edge cases, one-offs | Customer-specific tweaks, edge cases |
+
+**The order of magnitude of core use cases is 1 (typically 2–3).** Rarely 4, almost never 5, Juval has only seen 6 once. If your product manager puts 10 bullets on a brochure, they get fired.
+
+---
+
+#### The Mission of the Architecture
+
+The mission: **support all use cases, present and future, known and unknown.** This is where the bar is set. Never lower it to meet your inadequacies.
+
+> [!danger] Never Lower the Bar
+> *"Stop making excuses. Start thinking about it structurally like an engineer. Don't lower the bar to meet your inadequacies. You always, always lower the bar. I can't do it, so maybe I should lower the bar to what I can do. No. No. The bar must be exactly where I set it."*
+
+---
+
+#### Composable Design — The Core Idea
+
+Your mission is to come up with a **smaller set of components** that you can put together to satisfy each of the core use cases. Other use cases represent different **interactions** between building blocks, not different decompositions.
+
+**Key principles:**
+- **Never design against requirements** — it's suicidal. Requirements change.
+- Design against a small set of building blocks that can be **recomposed**.
+- When requirements change, put components together in **different ways** — the design doesn't change.
+- The **smallest set** is best: architects suffer from extreme pendulum effect (tiny swings at origin = monster swings downstream).
+
+> [!quote] The Definition
+> *"Composable design is a design that doesn't try to satisfy any use case in particular. What's the point? These use cases are going to change. Never, ever try and satisfy any use case in particular. It's suicidal. It's a death wish."*
+
+---
+
+#### The ~10 Components Rule
+
+The optimal number of components is approximately **10** (order of magnitude). This isn't arbitrary — it's driven by **combinatorics**:
+
+| # Components | Combinations (n!) | Use Cases Supportable |
+|-------------|-------------------|----------------------|
+| 2–3 | 6 | Too few |
+| **10** | **~3.6 million** | **Bazillion — enough for all use cases** |
+
+Real-world examples converge on ~10:
+- Car: gearbox, fuel pump, engine block, radiator, battery ≈ 10
+- Laptop: CPU, hard drive, motherboard, memory, GPU ≈ 10
+- Human body: kidneys, liver, heart, lungs, brain ≈ 10
+- Immune system: ~10 proteins
+- Organic chemistry: ~10 elements
+
+> [!tip] Economics Drives the Number
+> No vendor (artificial or natural) can afford too few components (can't respond to changes) or too many (overly complex, overpriced, goes out of business). ~10 is the smallest set that gets away with.
+
+---
+
+#### Composable Design Enables True Agility
+
+> [!warning] Agility ≠ Rituals
+> *"You know what it takes to be agile. All you've been doing your entire career was rituals, useless pagan rituals, practicing a voodoo metastasized religion at the altar of doom. That's what you've been doing. The rituals cannot replace essence."*
+
+True agility = ability to respond quickly to changes in requirements. Composable design provides this because:
+1. Components stay stable
+2. Only the interaction/composition changes
+3. Change cost is minimized
+
+---
+
+#### The 85% Statistic — Bugs Are in Requirements
+
+> [!danger] The Hard Truth About Requirements
+> *"85% of all the cases where systems that were thought to have zero bugs were deployed and then still were found to have bugs, 85% of all of those bugs were traced directly to the requirements."*
+
+- Requirements bugs can't be detected in advance
+- If you design against requirements, a wrong requirement means the whole system is wrong
+- **Composable design is the only practical way** to address system-level defects in requirements
+
+---
+
+#### The Business Architect — A Missing Role
+
+There's a missing role in software development ecology:
+
+| Role | Domain | Skills |
+|------|--------|--------|
+| **Software Architect** | Software domain (architecture, interaction diagrams) | Analytical, abstract, systems thinking |
+| **Business Architect** | Business domain (requirements, use cases, operational concept) | People-oriented, analytical, abstract |
+
+The business architect:
+- Wines and dines customers
+- Derives requirements
+- Captures quiet behavior in diagrams
+- Creates the small set of components
+- Owns the use cases (not developers!)
+
+InfoWorld named this the **#1 hottest new job in IT**. The role requires a rare combination: right-brain + left-brain. Leonardo da Vinci would be one such person — and there are approximately zero of them per generation.
+
+---
+
+#### Workflow Engines — The Unfulfilled Promise
+
+The vision: business people capture required behavior in a visual tool → system composes components → code is generated automatically. This would give **extremely fast cycle time** because the business side never crosses into the software world.
+
+**Why every workflow tool failed:**
+1. Targeted the wrong audience (developers instead of business people)
+2. Microsoft's WF team (WCF team!) understood the need but made a developer tool
+3. The tool required code-behind, connection strings, serialization — "wicked visual programming"
+4. The startup that built a real business-person tool went out of business (no customers because the business architect role doesn't exist)
+
+---
+
+#### AI and Artificial Agility
+
+AI can now solve what the workflow engine couldn't: **exploring the combinatorial space** of component interactions to find optimal compositions.
+
+- With ~10 components and ~3.6 million possible combinations, no human can evaluate all options
+- AI can: simulate inputs, use Bayesian logic, genetic algorithms, run all combinations in parallel
+- **Spec-driven development (SDD)**: you focus on correctly specifying use cases, AI composes the solution
+- Linux Foundation announced **Doclang** — a formal industry standard for specifying use cases that AI can understand natively
+
+> [!tip] The Architect Becomes the Enabler of AI
+> *"The architect becomes the enabler of the AI... Your documentation now serves as the super prompt from hell. That is how you enable it."*
+
+---
+
+#### Context Rot — Writing Documentation for AI
+
+> [!danger] Longer Prompts = Worse Results
+> *"Recent research has identified a phenomenon called context rot. Where increasing the prompt's length degrades the result, especially the accuracy of the results."*
+
+For documentation (which will serve as AI prompts):
+- **Focused and short** — one focused prompt per topic
+- **Cover all relevant details, but no more, no less**
+- **Avoid repetitions** — saying the same thing in multiple ways makes AI worse
+- **No passive voice** — passive voice is "the refuge of those who don't want to say exactly who or what or when something happens"
+- **Avoid distractors** — irrelevant content degrades accuracy
+- **Answer all possible questions** — imagine a reader who knows nothing about the domain
+
+---
+
+#### The Future: Software Industrial Revolution
+
+| Before Industrialization | After Industrialization |
+|-------------------------|------------------------|
+| Every system handmade by absolute experts | Factories with assembly lines |
+| Every system a one-off | Interchangeable, maintainable components |
+| Insanely expensive | Mass production |
+| 97% of population toiled fields | 3% work fields (tractors + fertilizer) |
+
+**The software equivalent:**
+- Composable design + AI = software factories
+- Fewer developers needed (machines do the coding)
+- **Much higher demand for architects** (nobody says we have enough engineers)
+- The architect who can "crank the handle" will be worth their weight in gold
+
+> [!tip] Career Advice: Hide the Elephant
+> *"If you are walking down a trail in a jungle and an elephant is standing behind you, there are three options: step out of the way (give up), get trampled (be a mediocre developer), or run faster (become an exceptional architect). The best option is to hide the elephant — deploy composable design + AI."*
+
+---
+
+### Composable Design — Key Excerpts
+
+> *"You will never get anything but garbage for requirements. But every cloud has a silver lining."*
+
+> *"How many core use cases are you going to have? ... It could be two or three. We find the number two and three to be incredibly common across most systems. Rarely we see four. I hardly ever saw five. And I've only seen six once."*
+
+> *"Your mission in life is to come up with a smaller set of components that you can put together to satisfy each of the core use cases."*
+
+> *"Composable design is a design that doesn't try to satisfy any use case in particular. What's the point? These use cases are going to change. Never, ever try and satisfy any use case in particular. It's suicidal."*
+
+> *"If you have 10 components, the factorial of 10 is bazillion, bazillion, bazillion. Somewhere around 10, there's such an explosion of possible interaction, you can now satisfy all the use cases, present and future, known and unknown."*
+
+> *"85% of all the cases where systems that were thought to have zero bugs were deployed and then still were found to have bugs, 85% of all of those bugs were traced directly to the requirements."*
+
+> *"Composable design is the only practical way of addressing system-level defects that are in the requirements."*
+
+> *"You know what it takes to be agile. All you've been doing your entire career was rituals, useless pagan rituals, practicing a voodoo metastasized religion at the altar of doom."*
+
+> *"The person doing this side of the machine, we should call the business architect. So it turns out that we are actually missing a role here in the ecology of the software project."*
+
+> *"I call this idea artificial agility. And I've been waiting for this for a very long time."*
+
+> *"Your documentation now serves as the super prompt from hell. That is how you enable it."*
+
+> *"In such a world, we're not going to need as many developers. However, what about the demand for architects? Before the industrial age, what demand was there for engineers? Practically none. With industrial age, no country in the world says we have enough engineers."*
+
+---
+
+## Quiz — Composable Design
+
+> [!question]- 1. What is the difference between core use cases and fluff, and what order of magnitude should core use cases be?
+> [!summary]- Answer  
+> **Core use cases** represent the essence of the system and the nature of the business — they're what bring the customer to the door. **Fluff** is all the variations (happy case, sad case, incomplete case, one-off customer requests). Core use cases are almost always **1–3** (order of magnitude of 1). It's rare to see 4, almost never 5, and Juval has only seen 6 once in hundreds of systems.
+
+> [!question]- 2. What is "composable design" and why does Juval say never to design against requirements?
+> [!summary]- Answer  
+> **Composable design** is designing a smaller set of components that you can put together in different ways to satisfy each use case. Requirements change → you put components together differently → the design doesn't change. Designing against requirements is "suicidal" and a "death wish" because when requirements change, your entire design and code must change, making change maximally painful.
+
+> [!question]- 3. Why does Juval say the ~10 components rule exists? What mathematical principle supports it?
+> [!summary]- Answer  
+> Because of **combinatorics**: the number of use cases you can support is proportional to the combinations of your components. Factorial of 2–3 ≈ 6 use cases (not enough). But factorial of 10 ≈ bazillion combinations — an explosion of possible interactions that can satisfy all use cases, present and future, known and unknown. This is reinforced by real-world examples: cars (~10 components), laptops (~10), the human body (~10), immune system (~10 proteins).
+
+> [!question]- 4. According to the transcript, 85% of bugs in deployed "bug-free" systems trace back to what source, and why is composable design the only practical solution?
+> [!summary]- Answer  
+> **85% of bugs** trace directly to **the requirements**. The problem is you can't tell in advance that requirements are wrong. Composable design is the only practical solution because when requirements change (or were wrong), you just put components together in different ways — you don't have to redesign the entire system.
+
+> [!question]- 5. What is the "business architect" role that Juval says is missing from software development?
+> [!summary]- Answer  
+> The business architect owns the business side of the machine: wine and dine customers, derive requirements, capture quiet behavior in diagrams, come up with the small set of components, capture operation concept and interfaces. The role is a **right-brain/left-brain combination** — both people-oriented AND analytical/abstract. InfoWorld later named this the #1 hottest new job in IT. Without this role, developers end up owning the use cases (which is wrong — they can't possibly understand the business deeply enough).
+
+> [!question]- 6. Why does Juval say workflow engines have "horrible execution" despite "amazing potential"?
+> [!summary]- Answer  
+> Every vendor targeted the wrong audience (developers instead of business people) and made the tool part of the software world instead of the business world. The result: tools full of code-behind, connection strings, serialization — "a wicked visual programming" approach that's far worse than raw programming. Microsoft's WF team (WCF team, of all people!) understood the need but targeted developers. The startup that actually built a business-person tool went out of business because the fundamental problem is that the **business architect role doesn't exist** to use it.
+
+> [!question]- 7. What is "artificial agility" and how does AI enable it?
+> [!summary]- Answer  
+> **Artificial agility** is AI exploring the combinatorial space of component interactions to find the best way to compose them for any given requirement. With ~10 components and ~bazillion possible combinations, no human can try all of them — but for AI, it's "a Tuesday afternoon." AI can simulate inputs, use stochastic/Bayesian logic, try genetic algorithms, and run all combinations in parallel to find optimal compositions.
+
+> [!question]- 8. What is "context rot" and what does it mean for software documentation?
+> [!summary]- Answer  
+> **Context rot** is a phenomenon where increasing prompt length degrades AI accuracy, especially with high signal-to-noise ratios. The result: documentation must be **focused, clear, concise**, and answer all possible questions without redundancy. Adding more information or saying the same thing in multiple ways makes AI results worse. No passive voice, no distractions, no needles-and-haystacks.
+
+> [!question]- 9. What is the "industrial revolution" analogy Juval uses for the future of software development?
+> [!summary]- Answer  
+> Today, software is built pre-industrialized: every system is handmade by absolute experts, each system is a one-off, nothing is interchangeable or maintainable. The future: software factories with assembly lines, where AI/composable design tools enable **continuous delivery** with machines doing the coding. Just as industrialization reduced farming from 97% to 3% of the population, AI+composable design will reduce the need for developers dramatically while dramatically increasing demand for architects (who design the components).
+
+> [!question]- 10. How does composable design enable "extreme agility" for software products?
+> [!summary]- Answer  
+> By maintaining a fiction that all customers use the same version, you can **embed composable design in the end product**. Every customer can then customize their own version of the software by composing components differently. Every user can have their own version. Even time-based versions (e.g., weekend vs. weekday workflows). This is what Juval's own Energy product does — customers run different behaviors based on time and events without bothering the engineering group. The cycle time becomes extremely short because business people capture required behavior on the business side, not the software side.
+
 ## Related
 
 - [[MOC — Course Overview]]
@@ -844,6 +1086,7 @@ Developers want to code. Methodologies like agile let them pretend they're doing
 - [[Transcripts/Service Lifecycle.md|📜 Service Lifecycle Lecture (raw)]]
 - [[Transcripts/Project Tracking.md|📜 Project Tracking Lecture (raw)]]
 - [[Transcripts/Project Design.md|📜 Project Design Lecture (raw)]]
+- [[Transcripts/Composable Design.md|📜 Composable Design Lecture (raw)]]
 - [[Transcripts/Documentation.md|📜 Documentation Lecture (raw)]]
 
 ## Reflections & Discussion
