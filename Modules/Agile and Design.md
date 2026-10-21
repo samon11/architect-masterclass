@@ -27,7 +27,10 @@ tags:
 
 ### Agile in the Wild
 
--
+> [!note] Pointer — one line, no new argument
+> [[99-Resources/Transcripts/The IDesign Method#11. Not a Silver Bullet — Full Accountability|The IDesign Method]] contains a single-sentence version of the cargo-cult critique: *"You go through all the agile rituals, producing a giant ball of mud with insane level of coupling and you call it agile. Oh, you went through all the rituals. **You are on the hook.**"*
+>
+> The substance is already in [[Modules/Project Planning#Agile Criticism: The Voodoo Metastasized Religion]] — same argument, different words. Cross-link only; nothing here is new.
 
 ### Skills and Agile Development
 

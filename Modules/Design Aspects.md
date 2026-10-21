@@ -20,7 +20,7 @@ tags:
 - [ ] Complicated vs. complex
 - [ ] Complex software systems
 - [ ] Structure and interactions
-- [ ] Self-similarity and fractal
+- [x] Self-similarity and fractal
 - [ ] Fractal examples
 - [ ] Fractal design patterns
 - [ ] AI modeling
