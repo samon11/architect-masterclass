@@ -37,6 +37,7 @@ This vault tracks study notes for **Juval Lowy's Architect's Master Class**, a c
 ├── 01-Templates/               ← Note templates with frontmatter
 └── 99-Resources/               ← Attachments, images, tag reference
     ├── Transcripts/             ← Lecture transcripts with key excerpts
+    ├── Media/                   ← Raw lecture recordings (.webm), gitignored
     └── ...
 ```
 
@@ -47,6 +48,7 @@ This vault tracks study notes for **Juval Lowy's Architect's Master Class**, a c
 - **Callouts** (`> [!type]`) for highlighted information blocks
 - **Topic checkboxes** (`- [ ]`) on module pages to track progress
 - **Tags**: `#course/notes`, `#module-N`, `#concept`, `#juval-lowy`, `#ai`, etc.
+- **Raw recordings** live in `99-Resources/Media/`, which is gitignored. Never commit audio or video.
 
 ## Creating New Notes
 
@@ -59,8 +61,12 @@ This vault tracks study notes for **Juval Lowy's Architect's Master Class**, a c
    - **Transcripts** → `99-Resources/Transcripts/` (raw lecture transcripts with key excerpts)
    - **Concept notes** → `00-Inbox/` (quick capture, sort later)
    - **Sub-notes** → `Modules/<Module Name>/` (related notes that belong to a module)
+   - **Raw recordings** → `99-Resources/Media/` (gitignored archive; see [Using `macparakeet-cli`](#using-macparakeet-cli))
 
 ## After Importing a Transcript
+
+> [!note] Generating the raw transcript
+> To produce the transcript text from a lecture recording (`.webm`, `.mp3`, `.m4a`, `.mp4`, …), use [`macparakeet-cli`](#using-macparakeet-cli) below, then paste or import the result into `99-Resources/Transcripts/<Lecture Name>.md`.
 
 When a transcript and its key takeaways have been imported, follow this post-import workflow:
 
@@ -104,16 +110,56 @@ To create visual maps of:
 - Fractal architecture diagrams
 - Design principle hierarchies
 
-### Using `whisper`
+### Using `macparakeet-cli`
 
-To transcribe lecture audio (MP3) into text files:
+Local speech-to-text on Apple Silicon (Parakeet TDT). Use this to turn lecture recordings into transcript text.
+
+> [!important] Archive the recording first
+> Before transcribing, copy the source recording into `99-Resources/Media/` (gitignored) so the vault owns the original even if `~/Downloads/` is cleared:
+> ```bash
+> cp -n ~/Downloads/quality_assurance.webm "99-Resources/Media/"
+> ```
+> Then transcribe from the archived copy. Never commit files under `99-Resources/Media/`.
+
+For a single recording, the transcript goes to **stdout** and progress to **stderr**, so redirection works:
 ```bash
-whisper tab-audio-<date>.mp3 --model turbo -f txt --language en
+macparakeet-cli transcribe "99-Resources/Media/composable design.webm" \
+  -f transcript --mode clean --speaker-detection off \
+  > "99-Resources/Transcripts/composable design.txt"
 ```
-- Use this to generate transcript files from audio recordings
-- Output is a `.txt` file in the same directory; move to `99-Resources/Transcripts/` or the relevant module folder
-- **Model**: `turbo` (fast, good quality for lectures)
-- **Language**: `en` (English)
+
+To have the CLI write the file itself (named after the input), use `--output-dir`:
+```bash
+macparakeet-cli transcribe "99-Resources/Media/quality_assurance.webm" \
+  -f transcript --mode clean --speaker-detection off \
+  --output-dir "99-Resources/Transcripts"
+```
+
+Batch a whole folder in one pass:
+```bash
+macparakeet-cli transcribe "99-Resources/Media"/*.webm -f transcript --output-dir "99-Resources/Transcripts"
+```
+
+Key options:
+
+| Flag | Notes |
+|------|-------|
+| `-f transcript` | **Prose only** — use this for notes. Default `-f text` adds a `File:`/`Duration:`/`Speakers:` header block plus a word-timestamp dump |
+| `--mode clean` | Strips filler words. Default `raw` keeps everything |
+| `--speaker-detection off` | Drops `Speaker 1:` labels; leave on for multi-speaker panels |
+| `--engine <name>` | `parakeet` (default, local), `nemotron`, `whisper`, `cohere` |
+| `--language <code>` | Language hint for `whisper`/`nemotron`/`cohere` (ignored by Parakeet) |
+| `--no-history` | Skip saving the result to the MacParakeet history database |
+
+Re-export an already-transcribed recording without re-running STT:
+```bash
+macparakeet-cli history transcriptions          # list records + IDs
+macparakeet-cli export <id> -f txt -o lecture.txt
+macparakeet-cli export <id> -f markdown -o lecture.md
+```
+
+- Video containers (`.webm`, `.mp4`) need no conversion — the CLI extracts the audio track
+- Move or rename the resulting `.txt` into `99-Resources/Transcripts/` if it was written elsewhere
 
 ### Using `defuddle`
 

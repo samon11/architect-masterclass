@@ -12,3 +12,8 @@ Thumbs.db
 
 # not sure if I'm allowed to publish these!
 Transcripts/
+
+# Raw lecture recordings (archived locally, never committed)
+99-Resources/Media/
+
+.pi-subagents/

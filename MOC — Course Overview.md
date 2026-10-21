@@ -17,17 +17,17 @@ aliases:
 
 ## Course Modules
 
-This course is structured into **10 major modules**, each containing specific topics. Use the tracker below to monitor your progress.
+This course is structured into **11 major modules**, each containing specific topics. Use the tracker below to monitor your progress.
 
 ### 📘 Module Index
 
 | # | Module | Topics | Status |
 |---|--------|--------|--------|
 | 1 | [[Modules/The Architect]] | 5 topics | ⬜ |
-| 2 | [[Modules/Microservices Development Process]] | 22 topics | ⬜ |
+| 2 | [[Modules/Microservices Development Process]] | 25 topics (12 covered) | 🟡 |
 | **3** | **[[Modules/Project Planning]]** | **14 topics** | **🟡** |
-| 4 | [[Modules/Introduction to Service-Orientation]] | 3 topics | ⬜ |
-| 5 | [[Modules/Service Contract Design and Factoring]] | 6 topics | ⬜ |
+| 4 | [[Modules/Introduction to Service-Orientation]] | 4 topics (4 covered) | 🟢 |
+| 5 | [[Modules/Service Contract Design and Factoring]] | 6 topics (6 covered) | 🟢 |
 | 6 | [[Modules/Design and Architecture]] | 10 topics | ⬜ |
 | 7 | [[Modules/Design Aspects]] (incl. [[Modules/Design Aspects/Fractal Architecture]]) | 15+ topics | ⬜ |
 | 8 | [[Modules/Agile and Design]] | 6 topics | ⬜ |
