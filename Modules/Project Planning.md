@@ -438,7 +438,7 @@ Like water (essential in moderation, lethal in excess) or salt (vital for surviv
 
 #### Service Lifecycle Diagram
 
-![[../99-Resources/Images/service_lifecycle.png]]
+![[../99-Resources/Diagrams/service_lifecycle.md]]
 
 ### Project Tracking — Earned Value, Shallow S, and Living Plans
 
