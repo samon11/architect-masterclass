@@ -28,7 +28,7 @@ This course is structured into **11 major modules**, each containing specific to
 | **3** | **[[Modules/Project Planning]]** | **14 topics** | **🟡** |
 | 4 | [[Modules/Introduction to Service-Orientation]] | 4 topics (4 covered) | 🟢 |
 | 5 | [[Modules/Service Contract Design and Factoring]] | 6 topics (6 covered) | 🟢 |
-| 6 | [[Modules/Design and Architecture]] | 13 topics (3 covered) | 🟡 |
+| 6 | [[Modules/Design and Architecture]] | 13 topics (4 covered) | 🟡 |
 | 7 | [[Modules/Design Aspects]] (incl. [[Modules/Design Aspects/Fractal Architecture]]) | 11 topics (1 covered) | 🟡 |
 | 8 | [[Modules/Agile and Design]] | 6 topics | ⬜ |
 | 9 | [[Modules/Groupthink]] | 3 topics | ⬜ |
