@@ -24,12 +24,12 @@ tags:
 
 - [x] The IDesign Method
 - [x] Classic mistakes
-- [ ] Volatility-based decomposition
+- [x] Volatility-based decomposition *(practice half; the definition itself predates the recording)*
 - [ ] Universal design principles
 - [ ] The architect's challenge
 - [ ] Axes of volatility
 - [ ] Design example
-- [ ] Volatility and the business
+- [x] Volatility and the business
 - [ ] Open and closed architecture
 - [ ] Structure with clients, managers, engines, resource access and utilities
 - [x] Design validation
@@ -291,15 +291,37 @@ And the reframe from [[99-Resources/Transcripts/Contract Factoring in Practice|C
 
 ### Volatility-Based Decomposition
 
-- still empty — and [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] did **not** fill it.
+- [Transcript — VBD in Practice](../99-Resources/Transcripts/VBD%20in%20Practice.md)
 
-> [!info] This is the other half of a session whose first half is now recorded
-> The 2026-10-22 lecture is the **"what not to do"** half, and it ends exactly at the hinge: *"We have nailed to the ground the what not to do. Therefore, now we discuss the what to do."* **The word "volatility" appears zero times in those 10,471 words** — as do `axis`, `axes`, `encapsulation`, `cohesion`, `information hiding`, `Parnas`.
->
-> What belongs here, and where it stands:
-> - - **The positive principle itself — unrecorded.** Not one formulation of it appears anywhere in the 23 recordings so far.
-> - **The [[#Axes of Volatility]] — unrecorded.**
-> - The *anti-pattern* inventory is now complete: see [[#Design Don'ts]]. That is genuinely useful, but it is the negative half only.
+> [!info] First positive content — from [[99-Resources/Transcripts/VBD in Practice|VBD in Practice]] (2026-10-29, 6,222 words)
+> [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] was the "what not to do" half, with `volatility` appearing **zero** times. This recording is the *practice* half of "what to do" — `volatil` 15×. **But it starts mid-sentence**, so the definition itself was said before the clip begins. Still unrecorded: the formal statement of the principle and the [[#Axes of Volatility]] (`axis`/`axes` 0×).
+
+#### The Corollary — If It's Not Volatile, There Is No Block
+
+> [!important] "I really said decompose based on volatility. I didn't say decompose on what you've always been doing… components you already have… what the boss wants to see… the example you saw from the vendor."
+> **"Anything that's not volatile does not merit a block in the architecture."**
+
+The example is the **reporting** requirement from the stock-trading system in [[#The Stock Trading Example — Nine Ways the Canonical Design Comes Apart]]: if reporting is always done the same way, *"**hard code it**. … As a result, this architecture does not have a reporting block."* If reporting *is* volatile, *"by all means have a block."*
+
+This is the clean inversion of functional decomposition: there, a required function **always** gets a block (*"of course there's a block, because it's A, B, C"*); here, a required function gets a block **only if it is volatile**.
+
+Why it is hard to do: *"The brain is not elastic. **The brain is plastic.**"* Decades of functional decomposition don't spring back after one lecture.
+
+#### The Sirens — the Method Is the Mast
+
+Odysseus plugs his sailors' ears with beeswax and puts them on the oars (*"These are your code monkeys. You monkey row"*). The leader doesn't get to plug his ears — he **ties himself to the mast**.
+
+> [!quote] "**Your mast is the method.** … They sing that devilish song: *add that reporting block. We always had a reporting block. Everybody else has a reporting block. The customer wants to see it.* But he's tied to the mast. So he's saying: **if it's not volatile, there is no block.**"
+
+Note the role split: developers are *shielded* from the siren song; the architect must *hear it and not act on it*. Compare [[#Communication — "Architecture Survival"]].
+
+#### The Opposite Failure — the Zealous New Convert
+
+> [!warning] "The most zealous in any new religion are the new converts… people always try to **undo the sins of the past by overdoing the present**."
+
+Overcompensation sounds like *"this could change, and this could change, and this could change"* → **an explosion of boxes**, which is also a bad design. Two failure modes, opposite directions: too few blocks along the wrong lines (functional), and too many blocks for imagined change (speculative). The fix for the second is in [[#Volatility and the Business]].
+
+Same shape as contract factoring, where splitting without a brake produces *"an explosion of little things"* — see [[Modules/Service Contract Design and Factoring#Why Metrics Exist — the 14-Year Dead End]].
 
 ### Universal Design Principles
 
@@ -317,6 +339,23 @@ And the reframe from [[99-Resources/Transcripts/Contract Factoring in Practice|C
 > [!note] Partially illuminated, not filled
 > [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] never uses the phrase, but it is one long answer to a related question: **why do competent, informed people reliably produce bad designs?** His answer is not "they're careless" — it is *"human beings cannot resist the allure of the free lunch"*, and **"the nature of the architecture forces them."** See [[#Four Nails]] and [[#The Physics Argument — No Software Premise At All]]. Not filled.
 
+#### The 2% Problem — and Its Only Cure
+
+From [[99-Resources/Transcripts/VBD in Practice|VBD in Practice]]: *"You're going to spend at most **2% of the time designing systems**. And it's the height of hubris to think that every few years you can walk to the whiteboard, draw a few lines and absolutely nail it."* *(He says "we already discussed" the 2% figure; that discussion is not in any vault recording.)*
+
+> [!important] "The only cure to the 2% problem is to **practice**. And practice and practice and practice."
+
+- **The Hudson landing** — birds in both engines after takeoff from LaGuardia; a veteran banks left and lands in the river with no time to deliberate. *"Pure muscle memory"* from decades of rehearsing failures in his head. *"Had they had a 10-year veteran, they would all be dead."*
+- *"**Under fire, everybody sinks to the level of training.** If your level of training is zero, you will be a zero."*
+- **Thermodynamics callback** (cf. [[#The Physics Argument — No Software Premise At All]]): you cannot add value without sweating — but nothing says the sweating must come right before. *"**All the sweating is in your past.**"*
+- **The master painter's rooster** — a perfect rooster in a few strokes, and a studio of 20 years of practice roosters behind it.
+- **Pablo Casals**, late for an interview at a great age: *"I was practicing… I think now I actually got it right."* **"It never stops."**
+
+> [!tip] "You have your own reservoir of cadavers. **It's your past projects.**"
+> Doctors practice on cadavers *"because they don't complain when they make mistakes."* Practice on (1) **past projects** — nobody cares if you get it wrong, and you know where the pain was; (2) your **current project** — maybe it can still be saved; (3) **non-software systems** — a laptop, a house, a bicycle: *"these are universal design ideas."*
+
+Clinics (architecture, project design, data design — capped at 16, groups of 3–4, bring your own system) are *training wheels*, not a substitute: practice before, find your mistakes at the clinic, practice more after. Monty: **"The gaps are getting wider."** Same thesis as [[Modules/Service Contract Design and Factoring#How to Learn Contract Factoring]].
+
 ### Axes of Volatility
 
 -
@@ -327,7 +366,69 @@ And the reframe from [[99-Resources/Transcripts/Contract Factoring in Practice|C
 
 ### Volatility and the Business
 
--
+- [Transcript — VBD in Practice](../99-Resources/Transcripts/VBD%20in%20Practice.md)
+
+> [!important] The guideline: **"You must avoid encapsulating changes to the nature of the business."**
+
+#### The House → Skyscraper
+
+Is it *impossible* that a homeowner later wants a 50-floor skyscraper? No. So you "encapsulate the change": 300-foot friction piles, a bedroom for a transformer, a bedroom for a water pump…
+
+> [!quote] "At this point **you have stopped designing and you started speculating**. … The transition from a single family home to a 50-floor building is not a structural change, **it's a business change**." It is no longer in the business of housing a family; it is an office building or a hotel.
+
+#### Two Telltale Signs of Speculative Design
+
+| Sign | House | Gown with scuba fins |
+|---|---|---|
+| **1. Possible, but exceedingly rare** | ~1 in 10 million homes per decade | Dance in the gown, walk to the porch, dive the reef |
+| **2. You always do a poor job of it** | One pile costs more than the house | Neither as elegant as heels nor as good on coral as flippers |
+
+*"Every time you try and encapsulate a change to the nature of the business, you always find yourself doing a poor job. **I don't think you're getting paid to do a poor job.**"*
+
+#### Design for Your Arch-Competitor
+
+> [!important] "You never design for yourself, **you only design for your arch competitors**."
+
+Lift UPS's code, do every cosmetic change, drop it on FedEx's servers — it won't work. Same business, different **way** of doing it:
+- **Insurance** — buy a policy per package, vs. self-insure and pocket the premium.
+- **Routing** — fastest, vs. least diesel, vs. **fewest left turns** (fewer accidents → cheaper truck insurance).
+
+Each answer to *"why can't I use the competitor's system?"* is a **candidate volatility**. A third competitor doing it a third way (DHL) confirms it: *"It's definitely volatile."*
+
+And the inverse is the **nature of the business** — shipping packages — which you **never** encapsulate: *"I'm willing to bet that in the Federal Express system there is no box called shipping packages. … Shipping packages is a result of integrating the route planning, the insurance, the tracking and everything else."* Compare [[Modules/Service Contract Design and Factoring#The Design Law Behind It]]: a good design is *resilient to changes in the user domain*.
+
+#### Longevity — the Nature Doesn't Change, So the Rate Doesn't
+
+> [!quote] "**The more things do not change, the longer they have until they do change.**"
+
+| Example | Why it lasts |
+|---|---|
+| Trains outlived the car | Cost per pound per mile is ~1/10,000 of a truck — *"that physics is not going to change"* |
+| Moby Dick will outlast Harry Potter; the Bible outlasts both | *"Not about hunting whales"* — about human nature, which doesn't change |
+| Pompeii kitchen tools | *"In 2000 years the business of the spoon hasn't changed"* |
+
+> [!important] "The ability of the organization or the customer or the market to both **instigate and absorb a change is constant due to their nature**."
+
+Hospital IT moves slower than crypto startups not from taste but consequence — *"when they make mistakes, people die, or even worse, they get sued."* **"The nature of the business is what dictates the rate of change more than anything."**
+
+#### The Horizon Test
+
+Because the rate is roughly constant, you can **estimate** it from history and compare it with your system's lifespan:
+
+| ERP history | Your horizon | Verdict |
+|---|---|---|
+| Changed every 10 years, last 2 years ago | 3 years | **Hard code it** |
+| Changed every 5 years, last 1 year ago | 10 years | **Absolutely encapsulate it** |
+
+> [!tip] The question to keep asking: **"What could change along the span of my system?"**
+
+Putting this section together gives a three-way sort for any candidate change:
+
+| Kind | Example | Action |
+|---|---|---|
+| Not volatile within the horizon | Reporting that never changes; ERP swapped every 10 years on a 3-year system | **No block** — hard code it |
+| Volatile within the horizon | Package insurance, route planning | **Encapsulate** in a block |
+| A change to the nature of the business | House → skyscraper; shipping → something else | **Never encapsulate** — that's speculation |
 
 ### Open and Closed Architecture
 
@@ -341,6 +442,8 @@ And the reframe from [[99-Resources/Transcripts/Contract Factoring in Practice|C
 > **Still undelivered — re-parked a FIFTH time.** The 2026-10-22 [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] lecture is the closest call yet and still a miss: **`client` appears 24 times, and every single instance means "the caller / the UI"** — the web page, the mobile device, the desktop, the browser. It is the *caller* sense, which is at least the first node of the taxonomy — but the taxonomy is never named. `manager` 1, `engine` 3 (all three are an **aircraft** engine, in the jumbo-jet fuel story), `utilit` **0**, `resource access` **0**, `SSM` **0**.
 >
 > Prior attempts: [[99-Resources/Transcripts/Service Contract Design|Service Contract Design]] (parked it), [[99-Resources/Transcripts/Sample Project — Resilient Energy|Resilient Energy]] (*"the classic thing we're going to discuss tomorrow is inside each node"*), [[99-Resources/Transcripts/The IDesign Method|The IDesign Method]] (`service` 0 times), and now Functional Decomposition. The only structural language anywhere remains generic: *"the system is going to have layers. Inside layers you have components, you slice it."* **Layers-and-components is not the four-node taxonomy.**
+>
+> **Sixth miss:** [[99-Resources/Transcripts/VBD in Practice|VBD in Practice]] (2026-10-29) — `manager` 0, `resource access` 0, `SSM` 0; `engine` 2× (aircraft engines in the Hudson story), `utilit` 3× (the water/power utility in the skyscraper story).
 >
 > **This is now the most strongly primed reference in the vault.** The next recording that says *managers*, *engines*, *utilitities*, *resource access*, or *SSM* closes it. See [[Modules/Service Contract Design and Factoring#Sample Project]] for the v1→v4 contract evolution it is meant to explain.
 
@@ -755,10 +858,53 @@ He had promised *"I will save the best nail for last."* **It is never driven.** 
 >
 > It works because he is explicit that authority fails — *"you're still going to do it; that's the only thing you've ever seen."* The review makes it **his** judgement of **their** work, which is arguable (see the due-diligence architect: *"Ha. I don't think so."*). With labels removed, **two halves of the same team recognise each other's output**, and nobody is defending a position.
 
+### VBD in Practice
+
+> [!question]- 13. Fill in the blank: "Anything that's not ______ does not merit a ______ in the architecture." Then apply it to the stock-trading system's reporting requirement.
+>!
+> [!summary]- Answer
+> **Volatile**; **block**. If reporting is always done the same way, *"hard code it"* — the architecture has **no reporting block**. If reporting is volatile, *"by all means have a block."* This is the inversion of functional decomposition, where every required function automatically gets a block.
+
+> [!question]- 14. In the Odysseus allegory, who are the sailors, what is the mast, and what is the siren song? Why does the leader not get beeswax?
+>!
+> [!summary]- Answer
+> The sailors with beeswax on the oars are the developers (*"your code monkeys. You monkey row"*). The **mast is the method**. The siren song is the pressure to add familiar blocks — *"we always had a reporting block, everybody else has one, the customer wants to see it."* The leader can't plug his ears because he has to hear the requirements and judge them; he survives by being **tied to the method**: *"if it's not volatile, there is no block."*
+
+> [!question]- 15. Juval warns about a failure mode that is the opposite of functional decomposition. What is it, why does it happen, and what does it produce?
+>!
+> [!summary]- Answer
+> **Overcompensation by the new convert** — *"the most zealous in any new religion are the new converts"*, who *"try to undo the sins of the past by overdoing the present."* Everything becomes *"this could change, and this could change…"*, producing **an explosion of boxes**. The guideline that stops it: **avoid encapsulating changes to the nature of the business.**
+
+> [!question]- 16. Scenario: a client building a booking system for a small family-run hotel asks you to "make sure it can handle becoming a global airline-style reservations platform one day." What do you tell them, and which two telltale signs support your answer?
+>!
+> [!summary]- Answer
+> That is a change to the **nature of the business**, not a volatility — so you don't encapsulate it; doing so is **speculative design**. Sign 1: it is **possible but exceedingly rare** (like ~1 in 10 million houses per decade becoming skyscrapers). Sign 2: you would **do a poor job of it** — the cost and complexity would compromise the hotel system, like a gown with scuba fins that is neither elegant nor good underwater.
+
+> [!question]- 17. Explain the "design for your arch-competitor" technique using FedEx and UPS. What does it find, and what does it tell you *not* to build?
+>!
+> [!summary]- Answer
+> Imagine lifting UPS's code onto FedEx's servers after every cosmetic change. It won't work, because the same business is done differently — **insurance** (buy a policy per package vs. self-insure) and **routing** (fastest vs. least diesel vs. fewest left turns). Each "why can't we use theirs?" answer is a **candidate volatility**, and a third competitor doing it a third way confirms it. What you don't build: a block for the **nature of the business** itself — there is *"no box called shipping packages"*; shipping is the *result of integrating* routing, insurance, tracking, and so on.
+
+> [!question]- 18. "The ability of the organization… to both instigate and absorb a change is constant due to their nature." Use this to decide: the customer replaced their payment provider every 4 years, most recently 3 years ago, and your system must live 2 years. Encapsulate or hard code?
+>!
+> [!summary]- Answer
+> **Encapsulate.** The rate of change is roughly constant, so the history predicts the next swap in about a year — **inside** your 2-year horizon. Compare his ERP cases: changed every 10 years, last 2 years ago, 3-year horizon → hard code; changed every 5 years, last 1 year ago, 10-year horizon → absolutely encapsulate. The question is always **"what could change along the span of my system?"**
+
+> [!question]- 19. Why will people more likely read Moby Dick than Harry Potter in 150 years, and what has that got to do with volatility?
+>!
+> [!summary]- Answer
+> Because Moby Dick *"is not about hunting whales"* — it is about a person's struggle with their inner demons, i.e. **human nature, which doesn't change**. The lesson: **"The more things do not change, the longer they have until they do change."** The same holds for trains (physics of cost per pound per mile) and Pompeii's spoons. Things tied to an unchanging nature are stable; that's why the **nature of the business** is not where volatility lives.
+
+> [!question]- 20. What is the "2% problem", and what is Juval's cure? Name three things you can practice on.
+>!
+> [!summary]- Answer
+> An architect spends **at most 2% of their time** designing systems, so you can't expect to walk to the whiteboard every few years and nail it. The only cure is **practice** — *"under fire, everybody sinks to the level of training"*; *"all the sweating is in your past"* (Hudson landing, the painter's rooster, Casals still practicing). Practice on your **"reservoir of cadavers"**: (1) **past projects**, (2) your **current project**, (3) **non-software systems** like a laptop, house or bicycle. Clinics help, but only alongside practice before and after.
+
 ## Related
 
 - [[MOC — Course Overview]]
 - [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] — **the [[#Design Don'ts]] payload**
+- [[99-Resources/Transcripts/VBD in Practice|VBD in Practice]] — **the [[#Volatility-Based Decomposition]] and [[#Volatility and the Business]] payload**
 - [[99-Resources/Transcripts/The IDesign Method|The IDesign Method]] — the previous lecture
 - [[99-Resources/Transcripts/Contract Factoring in Practice|Contract Factoring in Practice]] — where "varying requirements ≠ what varies" comes from
 - [[Modules/Service Contract Design and Factoring]] — the ratchet explains the anemic contract
