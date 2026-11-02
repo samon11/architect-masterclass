@@ -25,16 +25,16 @@ tags:
 - [x] The IDesign Method
 - [x] Classic mistakes
 - [x] Volatility-based decomposition *(practice half; the definition itself predates the recording)*
-- [ ] Universal design principles
+- [ ] Universal design principles *(one recorded: features are aspects of integration)*
 - [ ] The architect's challenge
 - [ ] Axes of volatility
 - [ ] Design example
 - [x] Volatility and the business
-- [ ] Open and closed architecture
-- [ ] Structure with clients, managers, engines, resource access and utilities
+- [x] Open and closed architecture
+- [x] Structure with clients, managers, engines, resource access and utilities
 - [x] Design validation
-- [ ] Containing changes
-- [x] Design Don'ts
+- [x] Containing changes
+- [x] Design Don'ts *(incl. the Method Don'ts)*
 
 ## Notes
 
@@ -289,6 +289,20 @@ The two contributions this lecture makes beyond [[Modules/Microservices Developm
 
 And the reframe from [[99-Resources/Transcripts/Contract Factoring in Practice|Contract Factoring in Practice]]: **"Design validation is a world-class contract factoring technique."** Validation is not a final act — trying to validate *produces* factoring, because the use case turns out incomplete, wrong or duplicated, so you change it, which uncovers something else, so you validate again.
 
+#### Call Chains — the Tool
+
+From [[99-Resources/Transcripts/Structure Pt 1|Structure Pt 1]]: take a use case and *"in a loose way superimpose it on components from your architecture."*
+
+> [!important] **"If you can create a call chain diagram for a use case, you have a valid design."**
+
+| Line | Meaning |
+|---|---|
+| Dashed gray | Queued call |
+| Solid black | Synchronous call |
+| Dashed black | Asynchronous call — *"but you shouldn't"* |
+
+**Call chain vs sequence diagram** — same calls, *"identical, however they're not the same"*: a call chain has **no notion of order** (A before B? once or twice?). Sequence diagrams are labour-intensive, and the method runs under a time crunch, so for architecture validation order *"doesn't add any new information."* **Sequence diagrams shine in detailed design** — e.g. milking operations out of contracts (cf. [[Modules/Service Contract Design and Factoring]]). *"Use the right tool for the job."*
+
 ### Volatility-Based Decomposition
 
 - [Transcript — VBD in Practice](../99-Resources/Transcripts/VBD%20in%20Practice.md)
@@ -331,6 +345,23 @@ Same shape as contract factoring, where splitting without a brake produces *"an 
 > *"I can prove to you that functional decomposition is the wrong way of designing any system **without using a single software argument.**"* — then the first law of thermodynamics. That is the *form* of a universal principle: a rule you cannot trade away, because it is not about software. See [[#The Physics Argument — No Software Premise At All]]. Same shape as [[Modules/Service Contract Design and Factoring#The Closing Thesis — Compliance Asymmetry|The Closing Thesis — Compliance Asymmetry]].
 >
 > The list itself is still unrecorded. Not filled.
+
+#### Features Are Aspects of Integration, Not Implementation
+
+From [[99-Resources/Transcripts/Structure Pt 1|Structure Pt 1]] — the first rule he explicitly calls universal:
+
+> [!important] **"Features are always and everywhere aspects of integration, not implementation. This is a universal design rule. It is so fundamental, you have to read it again."**
+
+| System | Its only feature | What you integrate to see it |
+|---|---|---|
+| The Architect's Masterclass | The class | Juval, you, Zoom, laptop, wires, your time |
+| His laptop | Stream the PowerPoint | Hard drive, bus, network card, CPU, camera |
+| The hard drive | Store the file | Media, clock, voltage regulator, frame, screws |
+| A screw | Fastening | Stem, threads, head, **plus torque** |
+
+*"You can keep drilling this way all the way down to the quarks, and **you will never see a feature.**"* No level knows about the one above it — the laptop doesn't know it's in a masterclass. So *"you never map the feature to any particular component. God help you, that's functional decomposition."* Features come from **composing** the smallest set of building blocks — see [[#Composable Design — the Smallest Set]].
+
+*"What have you been doing your entire career? **Trying to implement features.**"* — then red pill / blue pill: *"**There's no unseeing this week.**"*
 
 ### The Architect's Challenge
 
@@ -432,24 +463,191 @@ Putting this section together gives a three-way sort for any candidate change:
 
 ### Open and Closed Architecture
 
--
+- [Transcript — Structure Pt 2](../99-Resources/Transcripts/Structure%20Pt%202.md)
+
+**Open architecture** — anyone calls anyone. Most flexible, but *"do you really benefit from the layers? Not so much."*
+
+| Violation | Example | Why it hurts |
+|---|---|---|
+| **Calling up** — worst | Resource or manager calls a client | Imports high volatility into low-volatility layers — *"when the client changes, your database detonates"* |
+| **Sideways** — second worst | Manager → manager; engine → engine; RA → RA | The callee becomes an activity of the caller (FD); *"if your atom needs another atom, is it really atomic or is it a molecule?"* |
+| **Skipping layers down** | Client → RA; engine → resource | Business logic in the client; a schema change detonates the engine |
+
+Forbidding calling down too would give *"an extremely decoupled system. It would also be a dead system."*
+
+> [!important] **Closed architecture: don't call up, don't call sideways, call only one layer down.** *"Always strive for a closed architecture. I showed you an open architecture just so you would know not to do it."*
+
+**Semi-closed/semi-open** (any number of layers down) is allowed in only two cases: critical infrastructure where every ounce of performance matters, and code that almost never changes — Winsock isn't seven layers inside, and changed ~3 times in decades. *"That's not most people."*
+
+Aside: a vendor whose OS is *"like doors, but it's not doors"* promoted exposing databases directly as services for a decade — **"Never listen to the vendor."**
+
+#### Escape Hatches
+
+Closed can be *"too rigid and too bureaucratic"*. Three relaxations that don't compromise encapsulation:
+
+1. **Utilities are a vertical bar** that every layer may call — no single layer is the right place for them. Guard it with **the cappuccino machine test**: *"Explain to me how you're going to use it in a cappuccino machine."* Security (are you allowed coffee?), diagnostics (filter clogged), logging (how much the office drank), pub/sub (running low) ✓; mortgage interest ✗. A real utility is usable as-is in practically any system.
+2. **Managers may queue calls sideways.** *Technically* it's a call **down** — into a queue resource via a proxy, picked up by a listener. *Semantically*, it's one use case triggering the deferred execution of an **unrelated** one (tell the batch manager to reconcile at month-end), so manager B is not an activity of A.
+3. **Both managers and engines call resource access.** The true boundary is business logic ↔ resource access; engines sit on *"a separate plane, orthogonal"* — the diagram is a 2-D shadow of a 3-D architecture, and an engine is almost a strategy-pattern tool of the manager.
+
+#### When Developers Open the Architecture
+
+> [!important] "Don't brush them aside… **There is a reason why they're doing it.** … The fact that this is the wrong solution doesn't mean the problem goes away."
+
+| They do | You ask | The fix |
+|---|---|---|
+| Manager calls a client (*"requirement 1.2.3"*) | What about the mobile client? What about manager B? | **Publish to pub/sub** (a utility — still closed). New managers and clients now cost nothing. |
+| Manager calls a manager (*"requirement 4.5.6"*) | *"Where does it say we have to do it now?"* | **Queue it.** |
 
 ### Structure (Clients, Managers, Engines, Resource Access, Utilities)
 
-> [!note] Parked reference — waiting for the SSM lecture
-> In [[99-Resources/Transcripts/Service Contract Design|Service Contract Design]] Juval designs a contract for **resource access** (a barcode scanner acting as a resource to a POS system), then explicitly defers the meaning of the term: *"These two words resource access doesn't mean much, but tomorrow when we'll discuss the **SSM method**, it will mean a lot. So I'm parking these two bullets for future reference."*
->
-> **Still undelivered — re-parked a FIFTH time.** The 2026-10-22 [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] lecture is the closest call yet and still a miss: **`client` appears 24 times, and every single instance means "the caller / the UI"** — the web page, the mobile device, the desktop, the browser. It is the *caller* sense, which is at least the first node of the taxonomy — but the taxonomy is never named. `manager` 1, `engine` 3 (all three are an **aircraft** engine, in the jumbo-jet fuel story), `utilit` **0**, `resource access` **0**, `SSM` **0**.
->
-> Prior attempts: [[99-Resources/Transcripts/Service Contract Design|Service Contract Design]] (parked it), [[99-Resources/Transcripts/Sample Project — Resilient Energy|Resilient Energy]] (*"the classic thing we're going to discuss tomorrow is inside each node"*), [[99-Resources/Transcripts/The IDesign Method|The IDesign Method]] (`service` 0 times), and now Functional Decomposition. The only structural language anywhere remains generic: *"the system is going to have layers. Inside layers you have components, you slice it."* **Layers-and-components is not the four-node taxonomy.**
->
-> **Sixth miss:** [[99-Resources/Transcripts/VBD in Practice|VBD in Practice]] (2026-10-29) — `manager` 0, `resource access` 0, `SSM` 0; `engine` 2× (aircraft engines in the Hudson story), `utilit` 3× (the water/power utility in the skyscraper story).
->
-> **This is now the most strongly primed reference in the vault.** The next recording that says *managers*, *engines*, *utilitities*, *resource access*, or *SSM* closes it. See [[Modules/Service Contract Design and Factoring#Sample Project]] for the v1→v4 contract evolution it is meant to explain.
+- [Transcript — Structure Pt 1](../99-Resources/Transcripts/Structure%20Pt%201.md)
+- [Transcript — Structure Pt 2](../99-Resources/Transcripts/Structure%20Pt%202.md)
+
+> [!success] Delivered — the parked reference closes
+> Parked in [[99-Resources/Transcripts/Service Contract Design|Service Contract Design]] (*"resource access doesn't mean much, but tomorrow… it will mean a lot"*) and re-parked **six** times. [[99-Resources/Transcripts/Structure Pt 1|Structure Pt 1]] (2026-11-02, 8,572 words) finally says it: `manager` 43 · `engine` 23 · `resource access` 13 · `utilit` 6 · `layer` 26. The name **SSM** still never appears (0×), nor do the *axes* or *open/closed* architecture.
+
+**Before the layers — the machinery.** Bring known areas of volatility to bear, then ask whether there are *typical interactions* between them with their own do's and don'ts: *"this is the kind of mental machinery you employ."* The **integer exercise** — 32 bits? 64 trillion? sparse matrix? which locale's separator? — *"even an integer can be a full-blown system."*
+
+> [!important] **"The method calls for using layers. And layers encapsulate top down."** Inside layers are services; **all cross-layer entities are services** (the plumbing argument from [[Modules/Introduction to Service-Orientation]]).
+
+#### The Taxonomy
+
+| Layer | Encapsulates volatility in… | Key rule |
+|---|---|---|
+| **Clients** | Client technologies and UI churn | Not "presentation" — the client can be another system. **Normalize all consumers** → hope of a single point of entry. |
+| **Managers** | The **sequence** of a use case | A family of **logically related use cases** (they change together) ≈ a subsystem. |
+| **Engines** | **An activity** | Managers use **zero or more** engines; sharing engines across managers is fine. |
+| **Resource Access** | **How** resources are accessed | Expose **atomic business verbs** — never CRUD or I/O. |
+| **Resources** | — | DB, queue, file, cache, *another system*. |
+| **Utilities** | — | Not business-specific, common across systems: security, diagnostics, logging, pub/sub, hosting, message bus. |
+
+**Why managers and engines split:** *"There's actually only two ways a use case could change. Either the **sequence** would change or the **activities** would change."* Same A, B, C serialized, duplicated or conditional → sequence volatility → **manager**. Same sequence, different A → activity volatility → **engine**.
+
+#### Resource Access — Atomic Business Verbs
+
+> [!warning] "Almost everybody you'll be surprised to learn is **doing it wrong**." They expose `Select`/`Delete`/`Load`/`Store` (everybody now knows it's a database) or `Read`/`Write`/`Seek` (everybody knows it's a file). Swap the resource → *"everybody upstream would detonate."*
+
+> [!important] **"Expose the lowest possible business context around the resource."** *("So this is a mouthful.")*
+
+Keep decomposing activities until they are **atomic business verbs** — *"you cannot express anything else in the business using these verbs."* They pertain to the **nature of the business**, which barely changes (see [[#Volatility and the Business]]), so *"everybody can consume them from now to the end of time."*
+
+**The bank:** *transfer* is not atomic (credit + debit); **credit** and **debit** are — *"since the time of the Medici."* Resource access becomes *"a transformation function between an atomic business verb and some kind of I/O"*; behind it, file → DB → static data, and *"nobody knows, nobody cares."*
+
+**Stock trading, re-read:** in [[#The Stock Trading Example — Nine Ways the Canonical Design Comes Apart]], the trade workflow (and two other workflows) were **managers**, feed transformation an **engine**, security a **utility**, gray boxes **resource access**, green boxes **clients** — *"matches exactly to the structure and taxonomy of the method."*
+
+#### Slices — How to Extend
+
+> A cohesive interaction between manager, engine, resource access and the utilities **may constitute a service to the outside world.**
+
+Layers horizontally, **vertical slices** (subsystems) vertically. For [[#The Vertical Slice]], pick a **middle-complexity** slice — the trivial one teaches nothing, the hardest is too much; *"once you do the first slice, the others just fall out."* (IDesign commits to one; almost always does two; sometimes three.) A slice with standalone business value can be built and deployed separately → **slices map to stages**.
+
+> [!important] **"The correct way of extending a system is by adding slices.** Not one in a million knows this." — not *"re-re-re-refactoring everything you have."*
+
+| Quality | How |
+|---|---|
+| Maintainable | Encapsulate the volatility |
+| Reusable | Logically consistent, cohesive, independent facets |
+| Extensible | Deliverable in slices |
+
+#### Composable Design — the Smallest Set
+
+The **smallest set of interacting building blocks** that supports **all** use cases — present and future, known and unknown — validated against the **core** use cases only. Order of magnitude **~10**: *"one or two managers, an engine, three or four resource access, three utilities, and that's already a system."* Fuller treatment: [[Modules/Project Planning#Composable Design — The Architecture of Permanence]].
+
+- **Time:** months to get the requirements and core use cases; once you have them and the volatilities, identifying components should take **"about an hour. But even if it takes you a week, it is an insignificant amount of time."**
+- **Don't design against the requirements** — *"another way of saying functional decomposition."* Composable design *"does not strive to satisfy any use case in particular."*
+- **Stop at your best.** Can't think of a smaller set? *"You have reached your point of best design. Your best may not be any good, by the way."* Your 14 vs Juval's 12: *"It doesn't matter at all… because I'm not doing your design."*
+
+#### Three Observations of a Ripe Decomposition
+
+Students who stop doing pure FD tend to encapsulate *"the most glaring volatilities"* and do the rest functionally → a **half-baked / unripe decomposition**. Three qualitative checks:
+
+1. **Volatility decreases top-down** — clients (*"can I have it in blue?"*) → managers → engines → resource access → resources (*"hardly ever change"*). Deeper layers are depended upon more, so the reverse means *"all hope is lost."* **"A good design is like a pyramid."**
+2. **Reuse increases top-down** — a client serves one customer; resources get reused even across systems (*"I'm not paying for data migrations"*).
+3. **Managers are *almost* expendable** — not expendable: *"an expendable manager or a pass-through manager is a **hallmark of functional decomposition**."* (Styrofoam cup vs your laptop vs a child's life.) Watch the team's reaction to a manager change:
+
+| Reaction | Verdict |
+|---|---|
+| *"Yeah, okay, whatever."* | Bad — manager does nothing |
+| *"Oh my god, we can't, it's too expensive."* | Bad — too much lives in the manager |
+| *"OK, so for that use case, instead of queuing from here we first…"* | **Excellent** |
+
+*"I cannot give you a number… you have to look at it and be honest with yourself."*
+
+#### Telling Managers from Engines
+
+From [[99-Resources/Transcripts/Structure Pt 2|Structure Pt 2]] — managers and engines are what newcomers struggle with most.
+
+| Observation | Detail |
+|---|---|
+| **Managers and resource access are nouns** | *Account manager*, *account access* ✓ — *billing manager*, *transferring manager*, *credit access* ✗ (verb-ish = FD wearing the method's names) |
+| **Engines name an activity** | *Pricing engine*, *calculation engine* |
+| **Engines are rare** | *"Engines are often the way developers abuse the method the most"* — every function becomes an engine |
+| **Open-ended, not variable** | *"Exactly three ways of calculating interest? You don't need an engine, **you need a switch statement**."* |
+
+> [!important] **"Do not confuse something which is variable with something which is volatile."**
+
+**The golden ratio:** managers to engines follow Fibonacci — 1 manager → ~0 engines, 2 → 1, 3 → 2, 5 → 3. **"If you have eight managers, you've already failed"**; even five *"is a stretch… it's a system of systems."* Empirical, unproven.
+
+**Who / What / How / Where** (loosely): clients = **who**, managers = **what**, engines = **how** (an activity), resource access = **how** (a resource is accessed), resources = **where**. Use it to **validate** (*"are all my managers 'what' with no smidgen of 'how'?"*) and to **initiate** from a blank canvas — list the whos/whats/hows, allocate boxes, compose behaviours, reflect the use cases back: *"you derive the requirements by designing the system first."*
+
+**Instance management:** managers per-call towards clients; engines and resource access sessionful within the manager's call.
+
+**Sharing engines and resource access across managers is *encouraged*** — design them for reuse, against the *"every service has its own resource"* dogma.
+
+#### Shapes, Smells and Symmetry
+
+Draw the call chain (or the **logical thread** winding through the components) and look at its shape:
+
+| Shape | Verdict |
+|---|---|
+| **Fork** — client fans out to many fine-grained services | FD; the client stitches |
+| **Staircase** — client → A → B → C | *"The staircase to hell"* |
+| **Stick figure** — head, arms, legs (*"tilt your head"*) | **Proper design** |
+| **Glove** (smell) — manager shuttles data between tiny engines and RA | Chatty; engines too small, not *"carrying their own weight."* Let engines do their own resource access; ask if three engines are one volatility. Sometimes benign — *"volatility trumps everything."* |
+| **Double-back** (smell) — same engine called first and last | Commingled use cases or broken state management (validate, work, validate again → how do you undo?). Lock, validate, work, release. |
+
+> [!important] **"Good architecture tends to be symmetric."** — *"It's not the absence that's the flag, it's the asymmetry."*
+
+Three use cases fire an event after RA; the fourth doesn't → red flag. In a good design, *"if you remove the labels, it looks like the same call chain"* across managers. The Vitruvian Man argument: we are **externally** symmetric because of evolutionary pressure (pivot to threats from any side); guts aren't, because by then *"you're already dead."* Responding to change is the evolutionary pressure on software.
 
 ### Containing Changes
 
--
+- [Transcript — Structure Pt 1](../99-Resources/Transcripts/Structure%20Pt%201.md)
+
+**Live system** = people use it, it benefits humanity. **Dead system** = nobody uses it.
+
+**Functional decomposition maximizes the impact of change**: places are functional, not changeable, so the change is in all places — *"like swallowing a live hand grenade"*, and *"100% self-inflicted."* The developer reflex — *"we'll add it to our semi-annual release"* — pushes the customer to the phone, the fax, the legacy system, a competitor. **Fighting change pushes users away; pushing users away kills the system** — *"cutting the branch you are sitting on."*
+
+> [!important] **"The trick is not in fighting the change. The trick is in minimizing its impact."**
+
+**In a method-based system** a use-case change is a workflow change → a **manager** change. *"The manager may be gravely impacted, completely destroyed. **But none of the underlying services care.**"* The bulk of the effort — engines, atomic-verb resource access, world-class UI and APIs, utilities, security, logging, pub/sub, regression tests — **is salvaged**. That is what lets you respond quickly.
+
+> [!quote] "**Responding quickly to changes is the essence of agility.** … Everything I do is *designed* to unleash the agility your business has been craving and you have been denying." **"Rituals cannot replace essence."** Compare [[Modules/Agile and Design]].
+
+#### Antifragile
+
+> [!important] **"You must design antifragile systems. The change is coming. And the change is good."**
+
+The opposites game: the opposite of heavy is not light (the feather is *"back at zero"*) but **anti-heavy**; the opposite of fragile is not robust but **antifragile** — *"we have no language for it, and so we cannot actually think of it."*
+
+| Box | Label | On arrival |
+|---|---|---|
+| Champagne glasses | *Fragile, handle with care* | Shards |
+| Bricks | — | Bricks — **robust = zero** |
+| Antifragile | *"Please drop, no side is up"* | **Better than when shipped** |
+
+Examples: humans (the *"third chimpanzee"* who walked into the savannah and stood up), airplane safety, the immune system, muscles. **Robust → out of business; detonate → out of business; only option: get better from change.** Even the worst design, if each unforeseen change gets *its own box*, starts **containing changes** and improves; method-based systems, through structure and patterns, become *"a much better approximation of the volatility in the business"* — with trivial code (*"twelve lines here, 20 over there"*). Project design improves the same way, alongside it.
+
+#### Two Classic Project Mistakes
+
+Charging ahead to code with no design, or an **endless front end**. The incentive trap behind the first: the architect needs 3–4 months; empty offices look bad, idle developers look worse, so the manager staffs immediately and hands out features A, B, C. *"Three or four months later the architect is done… Does it matter? No, because the developers are working on a completely different system."* His answer — *"it depends who you are"* — is cut off at the end of Part 1.
+
+**The way out** ([[99-Resources/Transcripts/Structure Pt 2|Structure Pt 2]]): assigning features A, B, C is **functional decomposition of the team** (*"the team from hell… turf wars"*), and the boss doesn't care who does what — **"what the boss really wants is no idle hands."** So give developers the two things that never depend on the design: **client UI and utilities.**
+
+- **UX/UI and APIs** — *"If you need to see the back end to craft the UI, you've already failed."* *"Nobody wants to use your API. **They want to have used your API.**"*
+- **Infrastructure** — pub/sub, message bus, logging, distributed tracing, security, regression testing, transactions. **"Implement all the infrastructure before developers write the first line of code"** — retrofitting it is *"absolute hell."* It usually takes *longer* than the whole front end.
+
+Sell it as *"early customer feedback and security from day one"* — *"you can play these people like fiddles."* **Caveat — sunk cost:** project design may show the project is unaffordable, and by then everyone cries *"you can't cancel us now."* So do it **only when there is no not doing the project.**
 
 ### Design Don'ts
 
@@ -768,6 +966,26 @@ He had promised *"I will save the best nail for last."* **It is never driven.** 
 
 ---
 
+#### The Method Don'ts
+
+From [[99-Resources/Transcripts/Structure Pt 2|Structure Pt 2]]. These are about using the method wrongly, not about functional decomposition: *"things that were completely obvious to me… so I had to conclude they were not obvious after all."*
+
+| # | Don't | Why |
+|---|---|---|
+| 1 | Clients call **multiple managers in the same use case** | Stitching = functional managers; business logic migrates to the client |
+| 2 | Managers queue calls to **more than one** manager — and it's **the same one** everywhere | **Zero-one-infinity**: calling 2 of 3 really means *"all remaining managers"* → **pub/sub** |
+| 3 | Queue calls to **engines** | A queued call exists in isolation; an engine is an activity in a manager's use case — *"who wants to know? Nobody."* |
+| 4 | Queue calls to **resource access** | Same — *"get me some data"* in isolation is meaningless |
+| 5 | **Engines** publish events | Publishing means recognising a state change; engines don't know what their work means |
+| 6 | **Clients** publish events | Coupling; betrayal of encapsulation |
+| 7 | **Resource access** publishes events | As engines |
+| 8 | **Resources** publish events (DB triggers) | *"Unless you have gremlins."* Your system changed the data, so your system publishes |
+| 9 | **Engines subscribe** to events | Processing an event starts a use case — engines can't run one |
+| 10 | **Engines call engines** | Everything about the activity is already inside |
+| 11 | **Resource access calls resource access** | Breaks closed architecture; no longer atomic |
+
+> [!warning] "Your brain is a wonderful **excuse generator**." ~200 times on the alumni forum: *"slide 99 of the holy scrolls says don't, but in my case…"* → months later: *"Guys, you were right… once I addressed the real problem, the need for violating the method went away."*
+
 ## Quiz
 
 > [!question]- 1. Juval says the method is "literally a meat grinder" and "highly deterministic." If so, why does he keep saying "garbage in, garbage out" — and what exactly is your job that the machine cannot do?
@@ -900,11 +1118,123 @@ He had promised *"I will save the best nail for last."* **It is never driven.** 
 > [!summary]- Answer
 > An architect spends **at most 2% of their time** designing systems, so you can't expect to walk to the whiteboard every few years and nail it. The only cure is **practice** — *"under fire, everybody sinks to the level of training"*; *"all the sweating is in your past"* (Hudson landing, the painter's rooster, Casals still practicing). Practice on your **"reservoir of cadavers"**: (1) **past projects**, (2) your **current project**, (3) **non-software systems** like a laptop, house or bicycle. Clinics help, but only alongside practice before and after.
 
+### Structure Pt 1
+
+> [!question]- 21. There are only two ways a use case can change. Name them, and the building block that encapsulates each.
+>!
+> [!summary]- Answer
+> The **sequence** changes (same activities, different order/duplication/conditions) → **managers**. The **activities** change (same sequence, different way of doing a step) → **engines**. Managers use zero or more engines, and engines can be shared across managers.
+
+> [!question]- 22. Your resource access service exposes `Select`, `Insert`, `Update`, `Delete`. What's wrong, and what should it expose instead? Use the bank to illustrate.
+>!
+> [!summary]- Answer
+> CRUD (or `Read`/`Write`/`Seek`) leaks the kind of resource — everyone knows it's a database (or file), so swapping to a cache *"detonates"* everyone upstream. Expose **atomic business verbs** — *"the lowest possible business context around the resource."* In a bank, *transfer* isn't atomic (it's credit + debit); **credit** and **debit** are, and haven't changed *"since the time of the Medici"* because they're the **nature of the business**. Resource access then transforms verbs into I/O, and the inside can change freely.
+
+> [!question]- 23. Fill in the blank: "Features are always and everywhere aspects of ______, not ______." Walk the drill-down that proves it.
+>!
+> [!summary]- Answer
+> **Integration**; **implementation**. The masterclass is not in any one place — it integrates Juval, you, Zoom, the laptop. The laptop's only feature is streaming the PowerPoint, integrating disk, bus, network card, CPU. The hard drive's is storing the file — media, clock, regulator, screws. The screw's is fastening — stem, threads, head, plus torque. *"All the way down to the quarks… you will never see a feature."* So never map a feature to a component.
+
+> [!question]- 24. Why is a call chain diagram enough to validate an architecture, when it can't even tell you whether engine A is called before engine B? Where do sequence diagrams belong?
+>!
+> [!summary]- Answer
+> At the architecture level, order adds no information you need — the question is whether the components *can* be composed to satisfy the core use cases: **"If you can create a call chain for a use case, you have a valid design."** Call chains are quick; sequence diagrams are labour-intensive and the method runs on a time crunch. Sequence diagrams belong in **detailed design** (e.g. factoring contract operations). Notation: dashed gray = queued, solid black = sync, dashed black = async (avoid).
+
+> [!question]- 25. Name the three observations that tell you a decomposition is "ripe" rather than half-baked.
+>!
+> [!summary]- Answer
+> 1. **Volatility decreases top-down** (clients most volatile, resources least) — a pyramid, because deeper layers are depended on more.
+> 2. **Reuse increases top-down** (clients aren't reusable; resources get reused even across systems).
+> 3. **Managers are *almost* expendable** — not expendable (a pass-through manager is a hallmark of FD), not precious either.
+
+> [!question]- 26. Scenario: a use case changes. Developer 1 says "sure, whatever, takes five minutes." Developer 2 says "no way, that manager is a monster, we'd have to start over." Developer 3 says "OK — instead of queuing it from the manager we first call the pricing engine, then…" Diagnose each.
+>!
+> [!summary]- Answer
+> 1. **Expendable** manager — it does nothing; logic lives elsewhere or it's a pass-through → hallmark of **functional decomposition**.
+> 2. **Too precious** — the manager holds too much (activities that should be engines, or access logic) → not almost expendable.
+> 3. **Excellent** — the manager is *almost expendable*: changing the sequence is reasoned and contained, and the engines/resource access below don't care.
+
+> [!question]- 27. How do you extend a well-designed system? And what do the words maintainable, reusable and extensible actually mean in the method?
+>!
+> [!summary]- Answer
+> **By adding slices**, not by refactoring what you have — *"not one in a million knows this."* A slice is a cohesive interaction of manager, engine(s), resource access and utilities that can be a service to the outside world; slices with standalone business value map to **stages**. Maintainable = **encapsulate the volatility**; reusable = **logically consistent, cohesive, independent facets**; extensible = **deliverable in slices**.
+
+> [!question]- 28. Why is "robust" the wrong goal? Explain using the opposites game and the three shipping boxes.
+>!
+> [!summary]- Answer
+> Robust is the feather to heavy's anvil — *back at zero*, not the opposite. Champagne (fragile) arrives as shards; bricks (robust) arrive unchanged; an **antifragile** box (*"please drop, no side is up"*) arrives better. Change is coming and is good: a robust system that ignores change goes out of business, a fragile one detonates; the only option is to **get better because of the change** — which method-based systems do, as each change gets contained in its own block and the design approximates the business's volatility more closely.
+
+> [!question]- 29. "We'll put it in the semi-annual release." Why does Juval say this kills the system, and what is the method's alternative?
+>!
+> [!summary]- Answer
+> The customer needs the behaviour now and will get it *"with or without you"* — phone, fax, legacy, a competitor — so **fighting change pushes users away, and a system nobody uses is dead**. The trick isn't fighting change but **minimizing its impact**: in a method-based system a use-case change hits only the manager, and the bulk of the effort (engines, resource access, UI, utilities) is salvaged, so you respond quickly — *"the essence of agility."*
+
+> [!question]- 30. How many building blocks should a composable design have, roughly, and how long should identifying them take? When do you stop improving it?
+>!
+> [!summary]- Answer
+> **~10 as an order of magnitude** (8–20): 1–2 managers, an engine, 3–4 resource access, ~3 utilities. Once you have the core use cases and areas of volatility, **about an hour** — even a week is insignificant (getting the requirements may take months). Stop when you **can't think of a smaller set**: that's your point of best design and diminishing returns — someone else's 12 vs your 14 doesn't matter.
+
+### Structure Pt 2
+
+> [!question]- 31. State the closed-architecture rule in three parts, and rank the three violations of open architecture from worst to least bad.
+>!
+> [!summary]- Answer
+> **Don't call up, don't call sideways, call only one layer down.** Worst: **calling up** (imports high volatility into low-volatility layers — the client changes, the database detonates). Second: **sideways** (the callee becomes an activity of the caller). Then **skipping layers down** — still bad, but you can't forbid calling down altogether or you get *"a very decoupled but very dead system."*
+
+> [!question]- 32. Name the three escape hatches that relax a closed architecture without breaking encapsulation.
+>!
+> [!summary]- Answer
+> 1. **Utilities** — a vertical bar every layer may call (gated by the cappuccino-machine test).
+> 2. **Managers may queue calls sideways** — technically a call *down* into a queue resource; semantically the deferred start of an unrelated use case.
+> 3. **Both managers and engines may call resource access** — the real boundary is business logic ↔ resource access; engines live on an orthogonal plane.
+
+> [!question]- 33. A developer wants to put `MortgageInterestCalculator` in the utilities bar "so everyone can call it." What test do you apply, and what's the verdict?
+>!
+> [!summary]- Answer
+> **The cappuccino machine test**: *"Explain to me how you're going to use it in a cappuccino machine."* Security, diagnostics, logging and pub/sub all have plausible coffee-machine stories; mortgage interest doesn't. Equivalently, a utility is usable **as-is in practically any other system**. Verdict: **not a utility** — it's business logic, likely an engine if it's truly volatile.
+
+> [!question]- 34. You have three ways of calculating interest, fixed by regulation. Engine or not? What principle decides it?
+>!
+> [!summary]- Answer
+> **Not an engine — a switch statement.** Engines encapsulate an **open-ended** set of ways of doing an activity. **"Do not confuse something which is variable with something which is volatile."** Engines should be rare — over-using them is how FD sneaks back in.
+
+> [!question]- 35. Fill in the blanks: managers should be named as ______; with 5 managers expect about ______ engines; with ______ managers "you've already failed."
+>!
+> [!summary]- Answer
+> **Nouns** (*account manager*, not *billing manager*); about **3** engines (Fibonacci: 1→0, 2→1, 3→2, 5→3); **8** managers — and even 5 is a stretch, *"a system of systems."*
+
+> [!question]- 36. Scenario: a developer has manager A calling client A directly because "requirement 1.2.3 says notify the client." How do you respond, and what do you replace it with?
+>!
+> [!summary]- Answer
+> Don't dismiss them — there's a real need. Ask: what happens when there's a mobile client? When manager B needs to notify too? Then replace the call-up with **publishing an event to pub/sub** (a utility, so the architecture stays closed). Adding manager B or another client now changes nothing in manager A. (For a manager calling another manager: *"where does it say we have to do it now?"* → **queue it**.)
+
+> [!question]- 37. Why may a manager queue calls to at most one other manager, and always the same one? What do you do if it needs more?
+>!
+> [!summary]- Answer
+> The **zero-one-infinity** law: the only sensible counts are 0, 1 and infinity. Calling 2 of 3 other managers is almost always really *"all remaining managers"* — and having each manager know where all others are is heavy coupling. So use **pub/sub**.
+
+> [!question]- 38. Give three of the Method Don'ts about events, and explain the "gremlins" one.
+>!
+> [!summary]- Answer
+> Engines don't publish events (they don't know what their work means); clients don't publish (coupling, betrays encapsulation); resource access doesn't publish; **engines don't subscribe** (handling an event starts a use case). **Resources don't publish events — unless you have gremlins**: a DB trigger is a team bypassing its own calcified system. Your system changed the data, so your system (a manager) should publish. Only if something *outside* your system changes data at night does the resource need to.
+
+> [!question]- 39. Describe the fork, staircase, stick figure, glove and double-back. Which are smells rather than verdicts?
+>!
+> [!summary]- Answer
+> **Fork:** the client fans out to many fine-grained services — FD. **Staircase:** client → A → B → C — *"staircase to hell."* **Stick figure:** proper design. **Glove** (smell): the manager shuttles data between tiny engines/RA — too chatty; let engines do their own resource access, merge engines that are one volatility. **Double-back** (smell): the same engine called first and last in a use case — commingled use cases or broken state management; lock, validate, work, release. Gloves and double-backs are **smells** — investigate, but they can be benign.
+
+> [!question]- 40. Your call chains: three use cases go client → manager → engine → RA → publish event; the fourth skips the event. Why is that a red flag, and what does good symmetry look like?
+>!
+> [!summary]- Answer
+> **"It's not the absence that's the flag, it's the asymmetry."** Either the fourth is missing an event, or the other three shouldn't have one — investigate. In a good design, call chains look alike even across managers: *"if you remove the labels, it looks like the same call chain."* The analogy: external symmetry evolves under pressure to respond to threats from any side; change is software's evolutionary pressure.
+
 ## Related
 
 - [[MOC — Course Overview]]
 - [[99-Resources/Transcripts/Functional Decomposition|Functional Decomposition]] — **the [[#Design Don'ts]] payload**
 - [[99-Resources/Transcripts/VBD in Practice|VBD in Practice]] — **the [[#Volatility-Based Decomposition]] and [[#Volatility and the Business]] payload**
+- [[99-Resources/Transcripts/Structure Pt 1|Structure Pt 1]] — **the [[#Structure (Clients, Managers, Engines, Resource Access, Utilities)]] and [[#Containing Changes]] payload**
+- [[99-Resources/Transcripts/Structure Pt 2|Structure Pt 2]] — **the [[#Open and Closed Architecture]] and [[#The Method Don'ts]] payload**
 - [[99-Resources/Transcripts/The IDesign Method|The IDesign Method]] — the previous lecture
 - [[99-Resources/Transcripts/Contract Factoring in Practice|Contract Factoring in Practice]] — where "varying requirements ≠ what varies" comes from
 - [[Modules/Service Contract Design and Factoring]] — the ratchet explains the anemic contract
