@@ -1,0 +1,10 @@
+{
+  "weights": {"complexity": 1, "defects": 2, "implementation_days": 1, "changes": 2, "reuse": 2},
+  "contracts": {
+    "IAppointmentsManager": {"complexity": 18, "defects": 6, "implementation_days": 10, "changes": 14},
+    "IAvailabilityEngine":  {"complexity": 25, "defects": 9, "implementation_days": 15, "changes": 20},
+    "ISchedulesAccess":     {"complexity": 6,  "defects": 1, "implementation_days": 5,  "changes": 2},
+    "IPatientsAccess":      {"complexity": 7,  "defects": 2, "implementation_days": 5,  "changes": 3},
+    "IDiagnostics":         {"complexity": 2,  "defects": 0, "implementation_days": 2,  "changes": 0}
+  }
+}

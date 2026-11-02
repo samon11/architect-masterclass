@@ -1,0 +1,47 @@
+{
+  "system": "Clinic Scheduling",
+  "components": [
+    {"name": "PatientPortal", "layer": "client"},
+    {"name": "FrontDeskApp", "layer": "client"},
+    {"name": "AppointmentsManager", "layer": "manager", "volatility": "Booking workflow differs per clinic and per payer"},
+    {"name": "AccountsManager", "layer": "manager", "volatility": "Billing workflow changes with insurers and regulation"},
+    {"name": "AvailabilityEngine", "layer": "engine", "volatility": "How open slots are computed (provider rules, overbooking policy)"},
+    {"name": "PricingEngine", "layer": "engine", "volatility": "Fee schedules and insurer-specific pricing"},
+    {"name": "PatientsAccess", "layer": "resourceaccess", "volatility": "Where patient records live (EHR vendor, local DB)", "operations": ["Register", "Identify", "Retire"]},
+    {"name": "SchedulesAccess", "layer": "resourceaccess", "volatility": "Calendar storage", "operations": ["Reserve", "Release", "Confirm"]},
+    {"name": "LedgerAccess", "layer": "resourceaccess", "volatility": "Ledger / clearing-house", "operations": ["Charge", "Credit"]},
+    {"name": "ClinicDB", "layer": "resource"},
+    {"name": "Security", "layer": "utility"},
+    {"name": "Logging", "layer": "utility"},
+    {"name": "PubSub", "layer": "utility"}
+  ],
+  "use_cases": [
+    {"name": "Book appointment", "calls": [
+      {"from": "PatientPortal", "to": "AppointmentsManager"},
+      {"from": "AppointmentsManager", "to": "Security"},
+      {"from": "AppointmentsManager", "to": "PatientsAccess"},
+      {"from": "AppointmentsManager", "to": "AvailabilityEngine"},
+      {"from": "AvailabilityEngine", "to": "SchedulesAccess"},
+      {"from": "AppointmentsManager", "to": "SchedulesAccess"},
+      {"from": "SchedulesAccess", "to": "ClinicDB"},
+      {"from": "PatientsAccess", "to": "ClinicDB"},
+      {"from": "AppointmentsManager", "to": "PubSub", "type": "publish"}
+    ]},
+    {"name": "Cancel appointment", "calls": [
+      {"from": "FrontDeskApp", "to": "AppointmentsManager"},
+      {"from": "AppointmentsManager", "to": "SchedulesAccess"},
+      {"from": "SchedulesAccess", "to": "ClinicDB"},
+      {"from": "AppointmentsManager", "to": "AccountsManager", "type": "queued"},
+      {"from": "AppointmentsManager", "to": "PubSub", "type": "publish"}
+    ]},
+    {"name": "Settle visit", "calls": [
+      {"from": "FrontDeskApp", "to": "AccountsManager"},
+      {"from": "AccountsManager", "to": "PricingEngine"},
+      {"from": "AccountsManager", "to": "PatientsAccess"},
+      {"from": "AccountsManager", "to": "LedgerAccess"},
+      {"from": "LedgerAccess", "to": "ClinicDB"},
+      {"from": "AccountsManager", "to": "Logging"},
+      {"from": "AccountsManager", "to": "PubSub", "type": "publish"}
+    ]}
+  ]
+}

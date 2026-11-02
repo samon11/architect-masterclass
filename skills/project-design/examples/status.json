@@ -1,0 +1,8 @@
+{
+  "tolerance": 0.05,
+  "reports": [
+    {"time": 40, "completed": ["REQ", "ARCH", "PD", "TP"], "effort_to_date": 95},
+    {"time": 50, "completed": ["REQ", "ARCH", "PD", "TP", "DB"], "effort_to_date": 140},
+    {"time": 60, "completed": ["REQ", "ARCH", "PD", "TP", "DB", "UTIL", "BRA"], "partial": {"PRA": 0.5}, "effort_to_date": 205}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "project": "Clinic Scheduling",
+  "time_unit": "days",
+  "cost_per_unit": 800,
+  "core_team": 2,
+  "developers": 5,
+  "activities": [
+    {"id": "REQ",  "name": "Requirements & core use cases", "duration": 15, "role": "core"},
+    {"id": "ARCH", "name": "Architecture", "duration": 10, "role": "core", "depends_on": ["REQ"]},
+    {"id": "PD",   "name": "Project design", "duration": 5, "role": "core", "depends_on": ["ARCH"]},
+    {"id": "TP",   "name": "System test plan", "duration": 15, "role": "tester", "depends_on": ["ARCH"]},
+    {"id": "UTIL", "name": "Utilities: logging, security, pub/sub", "duration": 20, "depends_on": ["PD"]},
+    {"id": "DB",   "name": "Resources: database", "duration": 10, "depends_on": ["PD"]},
+    {"id": "PRA",  "name": "PatientsAccess", "duration": 15, "depends_on": ["DB"]},
+    {"id": "SRA",  "name": "SchedulesAccess", "duration": 15, "depends_on": ["DB"]},
+    {"id": "BRA",  "name": "LedgerAccess", "duration": 10, "depends_on": ["DB"]},
+    {"id": "AENG", "name": "AvailabilityEngine", "duration": 20, "depends_on": ["SRA", "UTIL"]},
+    {"id": "PENG", "name": "PricingEngine", "duration": 15, "depends_on": ["BRA", "UTIL"]},
+    {"id": "AMGR", "name": "AppointmentsManager", "duration": 20, "depends_on": ["AENG", "PRA", "SRA"]},
+    {"id": "BMGR", "name": "AccountsManager", "duration": 15, "depends_on": ["PENG", "PRA"]},
+    {"id": "UI",   "name": "Patient portal (client)", "duration": 25, "depends_on": ["UTIL"]},
+    {"id": "INT1", "name": "Integrate scheduling slice", "duration": 5, "depends_on": ["AMGR", "UI"]},
+    {"id": "INT2", "name": "Integrate visit-settlement slice", "duration": 5, "depends_on": ["BMGR", "INT1"]},
+    {"id": "SYS",  "name": "System testing", "duration": 10, "role": "tester", "depends_on": ["INT2", "TP"]},
+    {"id": "REL",  "name": "Release", "duration": 0, "depends_on": ["SYS"]}
+  ]
+}

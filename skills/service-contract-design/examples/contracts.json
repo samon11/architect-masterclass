@@ -1,0 +1,36 @@
+{
+  "services": [
+    {"name": "AppointmentsManager", "layer": "manager", "contracts": ["IAppointmentsManager", "IDiagnostics"]},
+    {"name": "AvailabilityEngine", "layer": "engine", "contracts": ["IAvailabilityEngine", "IDiagnostics"]},
+    {"name": "SchedulesAccess", "layer": "resourceaccess", "contracts": ["ISchedulesAccess", "IDiagnostics"]},
+    {"name": "PatientsAccess", "layer": "resourceaccess", "contracts": ["IPatientsAccess", "IDiagnostics"]}
+  ],
+  "contracts": [
+    {"name": "IAppointmentsManager", "operations": [
+      {"name": "Book", "params": [{"name": "request", "type": "BookingRequest", "fields": 3}]},
+      {"name": "Cancel", "params": [{"name": "appointmentId", "type": "string"}]},
+      {"name": "Reschedule", "params": [{"name": "appointmentId", "type": "string"}]},
+      {"name": "ConfirmArrival", "params": [{"name": "appointmentId", "type": "string"}]}
+    ]},
+    {"name": "IAvailabilityEngine", "operations": [
+      {"name": "FindOpenings", "params": [{"name": "criteria", "type": "OpeningCriteria", "fields": 2}]},
+      {"name": "Hold", "params": [{"name": "slotId", "type": "string"}]},
+      {"name": "Overbook", "params": [{"name": "slotId", "type": "string"}]}
+    ]},
+    {"name": "ISchedulesAccess", "operations": [
+      {"name": "Reserve", "params": [{"name": "slotId", "type": "string"}]},
+      {"name": "Release", "params": [{"name": "slotId", "type": "string"}]},
+      {"name": "Confirm", "params": [{"name": "slotId", "type": "string"}]}
+    ]},
+    {"name": "IPatientsAccess", "operations": [
+      {"name": "Register", "params": [{"name": "patient", "type": "PatientRecord", "fields": 4}]},
+      {"name": "Identify", "params": [{"name": "token", "type": "string"}]},
+      {"name": "Retire", "params": [{"name": "patientId", "type": "string"}]}
+    ]},
+    {"name": "IDiagnostics", "operations": [
+      {"name": "Ping", "params": []},
+      {"name": "Health", "params": []},
+      {"name": "Version", "params": []}
+    ]}
+  ]
+}

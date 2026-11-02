@@ -15,6 +15,11 @@ This vault tracks study notes for **Juval Lowy's Architect's Master Class**, a c
 | `obsidian-cli` | Interact with Obsidian vaults via CLI (read, create, search, manage notes) | Programmatic vault operations, plugin dev |
 | `json-canvas` | Create and edit JSON Canvas files (`.canvas`) with nodes, edges, and groups | Building visual canvases or mind maps |
 | `defuddle` | Extract clean markdown from web pages | Reading external articles or documentation |
+| `idesign-method` | Volatility-based decomposition, layers, call rules; validates an architecture JSON and draws call chains | Designing or reviewing a system's architecture |
+| `service-contract-design` | Contract attributes, factoring down/sideways/up, contract metrics analyzer (JSON or C#/Java/TS source) | Designing, factoring or measuring service contracts |
+| `project-design` | Critical path, float-based staffing, cost, planned earned value (shallow S), tracking diagnosis | Estimating duration/cost, staffing plans, earned-value charts, status checks |
+
+The last three are published from `skills/` (installable with `npx skills add samon11/architect-masterclass`). Their scripts are stdlib-only Python 3. When editing them, keep `SKILL.md` frontmatter valid YAML (quote any description containing `: `) and verify discovery with `npx skills add . --list`.
 
 ## Vault Structure
 
